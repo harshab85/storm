@@ -120,7 +120,7 @@
             $STORM_HOME/conf
         -->
         <file>
-            <source>${project.basedir}/../../conf/storm.yaml.example</source>
+            <source>${project.basedir}/../../conf/storm.yaml</source>
             <outputDirectory>/conf</outputDirectory>
             <destName>storm.yaml</destName>
         </file>

@@ -164,10 +164,10 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/storm.git</connection>
-        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/storm.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://git-wip-us.apache.org/repos/asf/storm</url>
+        <connection>scm:git:https://github.com/harshab85/storm.git</connection>
+        <developerConnection>scm:git:https://github.com/harshab85/storm.git</developerConnection>
+        <tag>autoscaling</tag>
+        <url>https://github.com/harshab85/storm.git</url>
     </scm>
 
     <issueManagement>
