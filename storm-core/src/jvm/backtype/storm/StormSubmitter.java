@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import backtype.storm.security.auth.IAutoCredentials;
 import backtype.storm.security.auth.AuthUtils;
+import backtype.storm.autoscaling.AutoScalingTopology;
+import backtype.storm.autoscaling.DaemonSubmitter;
 import backtype.storm.generated.*;
 import backtype.storm.utils.BufferFileInputStream;
 import backtype.storm.utils.NimbusClient;
@@ -248,10 +250,14 @@ public class StormSubmitter {
                     client.close();
                 }
             }
+            
             LOG.info("Finished submitting topology: " +  name);
-        } catch(TException e) {
+        } 
+        catch(TException e) {
             throw new RuntimeException(e);
         }
+        
+        submitTopologyToScalingDaemon(name, topology);
     }
 
     /**
@@ -307,10 +313,16 @@ public class StormSubmitter {
             public void onCompleted(String srcFile, String targetFile, long totalBytes) {
                 System.out.printf("\nFile '%s' uploaded to '%s' (%d bytes)\n", srcFile, targetFile, totalBytes);
             }
-        });
+        });   
     }
 
-    private static boolean topologyNameExists(Map conf, String name) {
+    private static void submitTopologyToScalingDaemon(String name, StormTopology topology) {		
+    	if(topology instanceof AutoScalingTopology){
+    		DaemonSubmitter.submitTopology(name);
+    	}		
+	}
+
+	private static boolean topologyNameExists(Map conf, String name) {
         NimbusClient client = NimbusClient.getConfiguredClient(conf);
         try {
             ClusterSummary summary = client.getClient().getClusterInfo();
