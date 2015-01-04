@@ -17,7 +17,14 @@
  */
 package backtype.storm.topology;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONValue;
+
 import backtype.storm.Config;
+import backtype.storm.autoscaling.AutoScalingTopology;
 import backtype.storm.generated.Bolt;
 import backtype.storm.generated.ComponentCommon;
 import backtype.storm.generated.ComponentObject;
@@ -30,10 +37,6 @@ import backtype.storm.generated.StormTopology;
 import backtype.storm.grouping.CustomStreamGrouping;
 import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import org.json.simple.JSONValue;
 
 /**
  * TopologyBuilder exposes the Java API for specifying a topology for Storm
@@ -111,9 +114,35 @@ public class TopologyBuilder {
             spoutSpecs.put(spoutId, new SpoutSpec(ComponentObject.serialized_java(Utils.serialize(spout)), common));
             
         }
+        
         return new StormTopology(spoutSpecs,
                                  boltSpecs,
                                  new HashMap<String, StateSpoutSpec>());
+    }
+    
+    
+    
+    
+    public StormTopology createAutoScaleTopology() {
+    	
+    	 Map<String, Bolt> boltSpecs = new HashMap<String, Bolt>();         
+    	 Map<String, SpoutSpec> spoutSpecs = new HashMap<String, SpoutSpec>();
+    	 
+    	 for(String boltId: _bolts.keySet()) {
+             IRichBolt bolt = _bolts.get(boltId);
+             ComponentCommon common = getComponentCommon(boltId, bolt);
+             boltSpecs.put(boltId, new Bolt(ComponentObject.serialized_java(Utils.serialize(bolt)), common));
+         }
+         
+         for(String spoutId: _spouts.keySet()) {
+             IRichSpout spout = _spouts.get(spoutId);
+             ComponentCommon common = getComponentCommon(spoutId, spout);
+             spoutSpecs.put(spoutId, new SpoutSpec(ComponentObject.serialized_java(Utils.serialize(spout)), common));
+         }
+         
+         return new AutoScalingTopology(spoutSpecs,
+                                  boltSpecs,
+                                  new HashMap<String, StateSpoutSpec>());
     }
 
     /**
